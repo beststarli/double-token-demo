@@ -24,7 +24,7 @@ export default function LoginForm() {
 
         try {
             // 调用后端登录接口
-            const response = await fetch("/api/login", {
+            const response = await fetch("/api/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

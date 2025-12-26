@@ -1,9 +1,11 @@
-import { Router } from 'express';
-import { login, refresh, verify, logout } from '../controllers/authController.js';
-import { authenticateToken } from '../middleware/authMiddleware.js';
+import { Router } from 'express'
+import { authenticateToken } from '../middleware/authMiddleware.ts'
+import { login, refresh, verify, logout, hello, testDb } from '../controllers/authController.ts'
 
 const router = Router();
 
+router.get('/hello', hello)
+router.get('/testdb', testDb)
 router.post('/login', login);
 router.post('/refresh', refresh);
 router.get('/verify', authenticateToken, verify);
