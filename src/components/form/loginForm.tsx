@@ -1,16 +1,16 @@
-"use client"
-
-import type React from "react"
-
 import { useState } from "react"
+import type React from "react"
+import { useNavigate } from "react-router-dom"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, Lock, Mail, CheckCircle2, AlertCircle } from "lucide-react"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Link } from "react-router-dom"
 
 export default function LoginForm() {
+    const navigate = useNavigate()
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
@@ -23,7 +23,6 @@ export default function LoginForm() {
         setMessage(null)
 
         try {
-            // 调用后端登录接口
             const response = await fetch("/api/auth/login", {
                 method: "POST",
                 headers: {
@@ -35,18 +34,13 @@ export default function LoginForm() {
             const data = await response.json()
 
             if (response.ok) {
-                // 登录成功，保存tokens
-                // Access Token 保存在内存或短期存储
                 sessionStorage.setItem("accessToken", data.accessToken)
-                // Refresh Token 可以保存在httpOnly cookie中（后端设置）
-                // 或者安全存储在localStorage（仅作为demo演示）
                 localStorage.setItem("refreshToken", data.refreshToken)
 
                 setMessage({ type: "success", text: "登录成功！正在跳转..." })
 
-                // 模拟跳转到受保护页面
                 setTimeout(() => {
-                    window.location.href = "/dashboard/dashboardPage"
+                    navigate("/dashboard")
                 }, 1500)
             } else {
                 setMessage({ type: "error", text: data.message || "登录失败，请检查您的凭据" })
@@ -116,13 +110,13 @@ export default function LoginForm() {
                     </div>
 
                     <div className="flex items-center justify-between text-sm mb-2">
-                        <label className="flex items-center gap-1 cursor-pointer">
-                            <input type="checkbox" className="rounded border-border cursor-pointer" />
+                        <label className="flex items-center gap-0.5 cursor-pointer">
+                            <input type="checkbox" className="rounded border-border mt-0.5" />
                             <span className="text-muted-foreground">记住我</span>
                         </label>
-                        <a href="#" className="text-accent hover:underline">
+                        <Link to="/forgot-password" className="text-accent hover:underline">
                             忘记密码？
-                        </a>
+                        </Link>
                     </div>
                 </CardContent>
 
@@ -137,9 +131,9 @@ export default function LoginForm() {
 
                     <div className="text-center text-sm text-muted-foreground">
                         还没有账户？{" "}
-                        <a href="#" className="text-accent hover:underline font-semibold">
+                        <Link to="/register" className="text-accent hover:underline font-semibold">
                             立即注册
-                        </a>
+                        </Link>
                     </div>
                 </CardFooter>
             </form>

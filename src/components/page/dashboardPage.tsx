@@ -1,30 +1,27 @@
-"use client"
-
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Shield, RefreshCw, LogOut, CheckCircle2 } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
-export default function DashboardPage() {
+export default function Dashboard() {
+    const navigate = useNavigate()
     const [user, setUser] = useState<{ email: string } | null>(null)
     const [tokenInfo, setTokenInfo] = useState<{ accessToken: string; refreshToken: string } | null>(null)
 
     useEffect(() => {
-        // 检查是否已登录
         const accessToken = sessionStorage.getItem("accessToken")
         const refreshToken = localStorage.getItem("refreshToken")
 
         if (!accessToken || !refreshToken) {
-            window.location.href = "/"
+            navigate("/", { replace: true })
             return
         }
 
         setTokenInfo({ accessToken, refreshToken })
-
-        // 验证token并获取用户信息
         verifyToken(accessToken)
-    }, [])
+    }, [navigate])
 
     const verifyToken = async (token: string) => {
         try {
@@ -38,11 +35,10 @@ export default function DashboardPage() {
                 const data = await response.json()
                 setUser(data.user)
             } else if (response.status === 401) {
-                // Access token过期，尝试刷新
                 await refreshAccessToken()
             }
         } catch (error) {
-            console.error("[v0] Token verification failed:", error)
+            console.error("Token verification failed:", error)
         }
     }
 
@@ -62,21 +58,19 @@ export default function DashboardPage() {
                 const data = await response.json()
                 sessionStorage.setItem("accessToken", data.accessToken)
                 setTokenInfo((prev) => (prev ? { ...prev, accessToken: data.accessToken } : null))
-                // 重新验证新token
                 await verifyToken(data.accessToken)
             } else {
-                // Refresh token也过期，需要重新登录
                 handleLogout()
             }
         } catch (error) {
-            console.error("[v0] Token refresh failed:", error)
+            console.error("Token refresh failed:", error)
         }
     }
 
     const handleLogout = () => {
         sessionStorage.removeItem("accessToken")
         localStorage.removeItem("refreshToken")
-        window.location.href = "/"
+        navigate("/", { replace: true })
     }
 
     if (!user) {
