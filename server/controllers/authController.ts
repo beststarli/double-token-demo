@@ -53,7 +53,8 @@ export async function login(req: Request, res: Response) {
     const client = await pool.connect();  // 获取连接
 
     try {
-        const { email, password } = req.body
+        const loginBody = (req.body && Object.keys(req.body).length ? req.body : req.query) as any;
+        const { email, password } = loginBody;
 
         if (!email || !password) {
             return res.status(400).json({ message: '邮箱和密码不能为空' });
@@ -131,13 +132,63 @@ export async function login(req: Request, res: Response) {
     }
 }
 
+export async function register(req: Request, res: Response) {
+    const client = await pool.connect();
+    try {
+        const body = (req.body && Object.keys(req.body).length ? req.body : req.query) as any;
+        const { email, password } = body;
+        if (!email || !password) {
+            return res.status(400).json({ message: '邮箱和密码不能为空' });
+        }
+
+        // 检查用户是否已存在
+        const existing = await client.query('SELECT id FROM users WHERE email = $1', [email]);
+        if (existing.rows.length > 0) {
+            return res.status(409).json({ message: '该邮箱已被注册' });
+        }
+
+        // 哈希密码并插入用户
+        const hashed = await bcrypt.hash(password, 10);
+        // 尝试插入 username（若表中没有 username 列，请调整为只插入 email/password）
+        const insertResult = await client.query(
+            'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email',
+            [email, hashed]
+        );
+        const user = insertResult.rows[0];
+
+        // 生成 tokens
+        const accessSecret: jwt.Secret = process.env.ACCESS_TOKEN_SECRET as unknown as jwt.Secret;
+        const refreshSecret: jwt.Secret = process.env.REFRESH_TOKEN_SECRET as unknown as jwt.Secret
+        const accessOptions: jwt.SignOptions = { expiresIn: process.env.ACCESS_TOKEN_EXPIRY || '15m' };
+        const refreshOptions: jwt.SignOptions = { expiresIn: process.env.REFRESH_TOKEN_EXPIRY || '7d' };
+
+        const accessToken = jwt.sign({ userId: user.id, email: user.email }, accessSecret, accessOptions);
+        const refreshToken = jwt.sign({ userId: user.id, email: user.email }, refreshSecret, refreshOptions);
+
+        // 保存 refresh token 到数据库
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        await client.query(
+            'INSERT INTO refresh_tokens (user_id, token, revoked, expires_at) VALUES ($1, $2, $3, $4)',
+            [user.id, refreshToken, false, expiresAt]
+        );
+
+        res.status(201).json({ accessToken, refreshToken, user: { email: user.email } });
+    } catch (error) {
+        console.error('Register error:', error);
+        res.status(500).json({ message: '注册失败' });
+    } finally {
+        client.release();
+    }
+}
+
 export async function refresh(req: Request, res: Response) {
 
     const client = await pool.connect();
 
     try {
 
-        const { refreshToken } = req.body;
+        const refreshBody = (req.body && Object.keys(req.body).length ? req.body : req.query) as any;
+        const { refreshToken } = refreshBody;
 
         if (!refreshToken) {
             return res.status(401).json({ message: '未提供refresh token' });
@@ -209,7 +260,8 @@ export async function logout(req: Request, res: Response) {
     const client = await pool.connect();
 
     try {
-        const { refreshToken } = req.body;
+        const logoutBody = (req.body && Object.keys(req.body).length ? req.body : req.query) as any;
+        const { refreshToken } = logoutBody;
 
         if (refreshToken) {
             // 更新数据库中 token 为 revoked
@@ -225,5 +277,20 @@ export async function logout(req: Request, res: Response) {
         res.status(500).json({ message: '登出失败' });
     } finally {
         client.release();
+    }
+}
+
+export async function forget(req: Request, res: Response) {
+    const client = await pool.connect()
+
+    try {
+        console.log('Received password reset request:', req.body)
+        res.json({ message: '密码重置请求已发送至您的邮箱' });
+    } catch (error) {
+        console.error('Password reset error:', error)
+        res.status(500).json({ message: '密码重置请求发生失败' })
+    }
+    finally {
+        client.release()
     }
 }

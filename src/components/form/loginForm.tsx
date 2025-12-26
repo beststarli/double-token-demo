@@ -41,7 +41,7 @@ export default function LoginForm() {
 
                 setTimeout(() => {
                     navigate("/dashboard")
-                }, 1500)
+                }, 1000)
             } else {
                 setMessage({ type: "error", text: data.message || "登录失败，请检查您的凭据" })
             }
@@ -102,7 +102,7 @@ export default function LoginForm() {
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                             >
                                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </button>
@@ -111,7 +111,7 @@ export default function LoginForm() {
 
                     <div className="flex items-center justify-between text-sm mb-2">
                         <label className="flex items-center gap-0.5 cursor-pointer">
-                            <input type="checkbox" className="rounded border-border mt-0.5" />
+                            <input type="checkbox" className="rounded border-border mt-0.5 cursor-pointer" />
                             <span className="text-muted-foreground">记住我</span>
                         </label>
                         <Link to="/forgot-password" className="text-accent hover:underline">
@@ -123,7 +123,7 @@ export default function LoginForm() {
                 <CardFooter className="flex flex-col space-y-4">
                     <Button
                         type="submit"
-                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold cursor-pointer"
                         disabled={loading}
                     >
                         {loading ? "登录中..." : "登录"}

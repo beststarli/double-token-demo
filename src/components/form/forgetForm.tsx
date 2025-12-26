@@ -20,7 +20,7 @@ export default function ForgotPasswordForm() {
         setMessage(null)
 
         try {
-            const response = await fetch("/api/auth/forgot-password", {
+            const response = await fetch("/api/auth/forgot", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -77,7 +77,7 @@ export default function ForgotPasswordForm() {
                                 required
                                 className="bg-input border-border/50 focus:border-accent transition-colors"
                             />
-                            <p className="text-xs text-muted-foreground pt-1">请输入您注册时使用的邮箱地址</p>
+                            <p className="text-xs text-muted-foreground mb-2">请输入您注册时使用的邮箱地址</p>
                         </div>
                     )}
 
@@ -92,12 +92,12 @@ export default function ForgotPasswordForm() {
                     )}
                 </CardContent>
 
-                <CardFooter className="flex flex-col space-y-4">
+                <CardFooter className="flex flex-col space-y-2">
                     {!emailSent ? (
                         <>
                             <Button
                                 type="submit"
-                                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold cursor-pointer"
                                 disabled={loading}
                             >
                                 {loading ? "发送中..." : "发送重置链接"}

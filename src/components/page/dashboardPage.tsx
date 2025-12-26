@@ -86,15 +86,15 @@ export default function Dashboard() {
             <div className="max-w-4xl mx-auto space-y-6">
                 <div className="flex items-center justify-between">
                     <h1 className="text-3xl font-bold">控制面板</h1>
-                    <Button onClick={handleLogout} variant="outline" size="sm">
+                    <Button onClick={handleLogout} variant="outline" size="sm" className="cursor-pointer">
                         <LogOut className="h-4 w-4 mr-2" />
-                        退出登录
+                        <span>退出登录</span>
                     </Button>
                 </div>
 
                 <Alert className="border-accent/50 bg-accent/10">
                     <CheckCircle2 className="h-4 w-4 text-accent" />
-                    <AlertDescription className="text-accent-foreground">您已成功通过双Token认证系统登录</AlertDescription>
+                    <AlertDescription className="text-white">您已成功通过双Token认证系统登录</AlertDescription>
                 </Alert>
 
                 <div className="grid gap-6 md:grid-cols-2">
@@ -132,20 +132,20 @@ export default function Dashboard() {
                             <div>
                                 <p className="text-sm font-semibold mb-1">Access Token</p>
                                 <p className="text-xs text-muted-foreground font-mono break-all bg-muted p-2 rounded">
-                                    {tokenInfo?.accessToken.substring(0, 40)}...
+                                    {tokenInfo?.accessToken.substring(0, 100)}...
                                 </p>
                                 <p className="text-xs text-muted-foreground mt-1">有效期: 15分钟</p>
                             </div>
                             <div>
                                 <p className="text-sm font-semibold mb-1">Refresh Token</p>
                                 <p className="text-xs text-muted-foreground font-mono break-all bg-muted p-2 rounded">
-                                    {tokenInfo?.refreshToken.substring(0, 40)}...
+                                    {tokenInfo?.refreshToken.substring(0, 100)}...
                                 </p>
                                 <p className="text-xs text-muted-foreground mt-1">有效期: 7天</p>
                             </div>
-                            <Button onClick={refreshAccessToken} variant="outline" size="sm" className="w-full bg-transparent">
+                            <Button onClick={refreshAccessToken} variant="outline" size="sm" className="w-full bg-transparent cursor-pointer">
                                 <RefreshCw className="h-4 w-4 mr-2" />
-                                手动刷新Token
+                                <span>手动刷新Token</span>
                             </Button>
                         </CardContent>
                     </Card>
