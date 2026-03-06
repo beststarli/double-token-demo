@@ -11,6 +11,6 @@ router.post('/register', register)
 router.post('/refresh', refresh);
 router.get('/verify', authenticateToken, verify);
 router.post('/logout', logout)
-router.post('forgot', forget)
+router.post('/forgot', forget)
 
 export default router;

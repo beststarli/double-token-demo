@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
+import './App.css'
 import Login from "@/components/page/loginPage"
 import Register from "@/components/page/registerPage"
-import ForgotPassword from "@/components/page/forgetPage"
 import Dashboard from "@/components/page/dashboardPage"
-import './App.css'
+import ForgotPassword from "@/components/page/forgetPage"
 
 function App() {
 	return (
